@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.manning.mss.ch02.sample03.exceptions.OrderNotFoundException;
 import com.manning.mss.ch02.sample03.orderentity.Order;
@@ -47,20 +48,28 @@ public class OrderProcessingService extends WebSecurityConfigurerAdapter {
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable String id) throws OrderNotFoundException {
 
-        if(orders.containsKey(id)){
+        if (orders.containsKey(id)) {
             return new ResponseEntity<Order>(orders.get(id), HttpStatus.OK);
-        }
-        else {
-           throw new OrderNotFoundException();
+        } else {
+            throw new OrderNotFoundException();
         }
     }
 
     @Bean
     public ResourceServerTokenServices tokenServices() {
+        String tokenServiceUri = System.getenv("TOKEN_SERVICE_URI");
+        tokenServiceUri = (tokenServiceUri != null && !tokenServiceUri.trim().isEmpty())
+                ? tokenServiceUri
+                : "http://localhost:8085";
+        String checkTokenEndpointUrl = UriComponentsBuilder
+                .fromUriString(tokenServiceUri).path("oauth/check_token")
+                .build()
+                .toUriString();
+
         RemoteTokenServices tokenServices = new RemoteTokenServices();
         tokenServices.setClientId("orderprocessingservice");
         tokenServices.setClientSecret("orderprocessingservicesecret");
-        tokenServices.setCheckTokenEndpointUrl("http://localhost:8085/oauth/check_token");
+        tokenServices.setCheckTokenEndpointUrl(checkTokenEndpointUrl);
         return tokenServices;
     }
 
