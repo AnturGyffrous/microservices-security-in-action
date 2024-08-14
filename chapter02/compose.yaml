@@ -1,0 +1,11 @@
+services:
+  oauth2server:
+    build: ./sample02/
+    ports:
+      - "8085:8085"
+  orderprocessingservice:
+    build: ./sample03/
+    environment:
+      - TOKEN_SERVICE_URI=http://oauth2server:8085
+    ports:
+      - "8080:8080"
