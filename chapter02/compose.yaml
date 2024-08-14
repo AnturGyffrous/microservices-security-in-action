@@ -3,9 +3,16 @@ services:
     build: ./sample02/
     ports:
       - "8085:8085"
+    volumes:
+      - oauth2server-maven-repo:/root/.m2
   orderprocessingservice:
     build: ./sample03/
     environment:
       - TOKEN_SERVICE_URI=http://oauth2server:8085
     ports:
       - "8080:8080"
+    volumes:
+      - orderprocessingservice-maven-repo:/root/.m2
+volumes:
+  oauth2server-maven-repo:
+  orderprocessingservice-maven-repo:
