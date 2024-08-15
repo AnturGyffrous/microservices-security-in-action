@@ -1,0 +1,9 @@
+services:
+  order-processing-service:
+    build: ./sample01/
+    ports:
+      - "8080:8080"
+    volumes:
+      - order-processing-service-maven-repo:/root/.m2
+volumes:
+  order-processing-service-maven-repo:
