@@ -5,5 +5,12 @@ services:
       - "8080:8080"
     volumes:
       - order-processing-service-maven-repo:/root/.m2
+  zuul-proxy:
+    build: ./sample02/
+    ports:
+      - "9090:9090"
+    volumes:
+      - zuul-proxy-maven-repo:/root/.m2
 volumes:
   order-processing-service-maven-repo:
+  zuul-proxy-maven-repo:
