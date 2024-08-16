@@ -6,11 +6,18 @@ services:
     volumes:
       - order-processing-service-maven-repo:/root/.m2
   zuul-proxy:
-    build: ./sample02/
+    build: ./sample04/
     ports:
       - "9090:9090"
     volumes:
       - zuul-proxy-maven-repo:/root/.m2
+  oauth2-server:
+    build: ./sample03/
+    ports:
+      - "8085:8085"
+    volumes:
+      - oauth2-server-maven-repo:/root/.m2
 volumes:
   order-processing-service-maven-repo:
   zuul-proxy-maven-repo:
+  oauth2-server-maven-repo:
