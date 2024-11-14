@@ -1,4 +1,10 @@
 services:
+  gateway:
+    build: ./gateway/
+    ports:
+      - "9090:9090"
+    volumes:
+      - gateway-maven-repo:/root/.m2
   resource:
     build: ./resource/
     ports:
@@ -11,3 +17,4 @@ services:
       - "4200:4200"
 volumes:
   resource-maven-repo:
+  gateway-maven-repo:
