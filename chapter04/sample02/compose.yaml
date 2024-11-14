@@ -1,0 +1,13 @@
+services:
+  resource:
+    build: ./resource/
+    ports:
+      - "8080:8080"
+    volumes:
+      - resource-maven-repo:/root/.m2
+  ui:
+    build: ./ui/
+    ports:
+      - "4200:4200"
+volumes:
+  resource-maven-repo:
