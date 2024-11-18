@@ -1,0 +1,20 @@
+services:
+  authz:
+    build: ./authz/
+    ports:
+      - "8081:8081"
+    volumes:
+      - authz-maven-repo:/root/.m2
+  resource:
+    build: ./resource/
+    ports:
+      - "8080:8080"
+    volumes:
+      - resource-maven-repo:/root/.m2
+  ui:
+    build: ./ui/
+    ports:
+      - "4200:4200"
+volumes:
+  authz-maven-repo:
+  resource-maven-repo:
