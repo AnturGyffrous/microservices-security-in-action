@@ -5,6 +5,8 @@ import com.netflix.zuul.context.RequestContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 
 import java.io.DataOutputStream;
@@ -17,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 public class OAuthFilter extends ZuulFilter {
 
     private static Logger log = LoggerFactory.getLogger(OAuthFilter.class);
+
+    @Autowired
+    private Environment env;
 
     public String filterType() {
 
@@ -38,34 +43,33 @@ public class OAuthFilter extends ZuulFilter {
         RequestContext requestContext = RequestContext.getCurrentContext();
         HttpServletRequest request = requestContext.getRequest();
 
-        //Avoid checking for authentication for the token endpoint
-        if(request.getRequestURI().startsWith("/token")){
+        // Avoid checking for authentication for the token endpoint
+        if (request.getRequestURI().startsWith("/token")) {
             return null;
         }
 
-        //Get the value of the Authorization header.
+        // Get the value of the Authorization header.
         String authHeader = request.getHeader("Authorization");
 
-        //If the Authorization  header doesn't exist or is not in a valid format.
+        // If the Authorization header doesn't exist or is not in a valid format.
         if (StringUtils.isEmpty(authHeader)) {
             log.error("No auth header found");
-            //Send error to client
+            // Send error to client
             handleError(requestContext);
             return null;
-        }
-        else if(authHeader.split("Bearer ").length != 2){
+        } else if (authHeader.split("Bearer ").length != 2) {
             log.error("Invalid auth header");
-            //Send error to client
+            // Send error to client
             handleError(requestContext);
             return null;
         }
 
         DataOutputStream outputStream = null;
 
-        //Get the value of the token by splitting the Authorization header
+        // Get the value of the token by splitting the Authorization header
         String token = authHeader.split("Bearer ")[1];
 
-        String oauthServerURL = "http://localhost:8085/oauth/check_token";
+        String oauthServerURL = env.getProperty("zuul.routes.token.url") + "/oauth/check_token";
 
         try {
             URL url = new URL(oauthServerURL);
@@ -77,14 +81,14 @@ public class OAuthFilter extends ZuulFilter {
 
             String urlParameters = "token=" + token;
 
-            //Send post request to authorization server to validate token
+            // Send post request to authorization server to validate token
             connection.setDoOutput(true);
             outputStream = new DataOutputStream(connection.getOutputStream());
             outputStream.writeBytes(urlParameters);
 
             int responseCode = connection.getResponseCode();
 
-            //If the authorization server doesn't respond with a 200.
+            // If the authorization server doesn't respond with a 200.
             if (responseCode != 200) {
                 log.error("Response code from authz server is " + responseCode);
                 handleError(requestContext);
