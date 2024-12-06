@@ -1,0 +1,23 @@
+services:
+  oauth2-server:
+    build: ./oauth2_server/
+    ports:
+      - "8085:8085"
+    volumes:
+      - oauth2-server-maven-repo:/root/.m2
+  gateway:
+    build: ./gateway/
+    ports:
+      - "9090:9090"
+    volumes:
+      - gateway-maven-repo:/root/.m2
+  service:
+    build: ./service/
+    ports:
+      - "8080:8080"
+    volumes:
+      - service-maven-repo:/root/.m2
+volumes:
+  oauth2-server-maven-repo:
+  gateway-maven-repo:
+  service-maven-repo:
